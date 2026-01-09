@@ -1,156 +1,69 @@
-Simple OS Simulation 🚀
+# Simple Operating System Simulation (SimpleOS)
 
-A high-fidelity simulation of core Operating System components, including a Multi-Level Queue (MLQ) scheduler, a 5-level paging Memory Management Unit (MMU), and a extensible System Call interface. This project mimics real-world kernel behaviors for resource isolation and task orchestration.
+## Overview
+This project is a comprehensive simulation of core operating system components, developed as part of the Operating Systems course at **HCMC University of Technology (HCMUT)**. The simulation focuses on the implementation of a multi-level queue scheduler, synchronization mechanisms, and a paging-based virtual memory system.
 
-📑 Table of Contents
+The system emulates the interaction between software processes, an OS kernel, and virtualized hardware (CPUs and Physical RAM).
 
-Overview
 
-Core Architecture
+---
 
-MLQ Scheduler
+## Key Features
 
-Paging & MMU (32/64-bit)
+### 1. Multi-Level Queue (MLQ) Scheduler
+The scheduler manages process execution across multiple CPUs using a priority-based MLQ algorithm.
+* **Priority Levels:** Supports up to `MAX_PRIO` (140) levels.
+* **Time Slicing:** Each process runs in a specific time slice before being enqueued back to its respective priority queue.
+* **Slot Calculation:** Execution time is allocated based on priority using a fixed formula: $slot = (MAX\_PRIO - prio)$.
 
-Kernel System Calls
+### 2. Paging-Based Memory Management
+The memory engine isolates process spaces and handles virtual-to-physical address translation.
+* **Dual Architecture Support:** Implements both 32-bit and 64-bit (5-level paging) address schemes.
+* **Memory Hierarchy:** Manages a singleton physical RAM device and up to 4 SWAP devices.
+* **Dynamic Allocation:** Supports `ALLOC` and `FREE` operations, managing virtual memory areas (`vm_area_struct`) and region lists.
+* **Page Swapping:** Handles page faults by moving frames between RAM and SWAP using a FIFO-based replacement policy.
 
-Instruction Set Architecture
+### 3. Kernel Interface (System Calls)
+Provides a structured interface between user applications and the kernel.
+* **Syscall Table:** Uses a `syscall_tbl` to route requests to appropriate handlers like `_sys_xxxhandler()`.
+* **Standard Operations:** Includes system calls for memory mapping (`memmap`), I/O operations, and process listing.
 
-Installation & Execution
+---
 
-Configuration
+## Project Structure
 
-🧐 Overview
+### Header Files (`include/`)
+* `sched.h`: Definitions for the scheduler and dispatcher.
+* `mem.h` & `mm.h`: Virtual Memory Engine and paging structures.
+* `cpu.h`: Virtual CPU implementation functions.
+* `common.h`: Core structures including the Process Control Block (PCB).
 
-This project simulates the interaction between software processes and virtualized hardware. It manages two critical resources:
+### Source Files (`src/`)
+* `sched.c`: Implementation of MLQ scheduling and `get_proc` logic.
+* `mm.c` & `mm-vm.c`: Paging-based memory management implementation.
+* `os.c`: The main entry point that initializes and boots the OS.
 
-CPU Time: Orchestrated via a prioritized MLQ dispatcher.
+---
 
-Physical Memory: Isolated through a Virtual Memory engine supporting RAM and multi-instance SWAP storage.
+## Instruction Set
+The simulated processes support five primary instructions:
+| Instruction | Syntax | Description |
+| :--- | :--- | :--- |
+| **CALC** | `calc` | Performs CPU calculations. |
+| **ALLOC** | `alloc [size] [reg]` | Allocates RAM and stores the address in a register. |
+| **FREE** | `free [reg]` | Deallocates memory at the address held in the register. |
+| **READ** | `read [source] [offset] [dest]` | Reads a byte from memory to a destination register. |
+| **WRITE** | `write [data] [dest] [offset]` | Writes data to a specific memory address. |
 
-🏗 Core Architecture
+---
 
-1. MLQ Scheduler
+## Getting Started
 
-The scheduler implements a Multi-Level Queue policy inspired by the Linux kernel:
+### Prerequisites
+* GCC Compiler
+* Make build tool
 
-Priority Range: 0 to 139 (140 levels).
-
-Time Quantum: Round-Robin execution within each priority queue.
-
-Dynamic Slot Allocation: Each priority level is assigned a specific time slot based on:
-
-slot = MAX_PRIO - priority
-
-Dispatcher: Handles context switching and process enqueuing back to the appropriate priority level.
-
-2. Paging & MMU (32/64-bit)
-
-The system supports sophisticated memory mapping techniques:
-
-Address Schemes: Traditional 32-bit and modern 64-bit 5-level paging (PGD, P4D, PUD, PMD, PT).
-
-Memory Hierarchy:
-
-RAM: Primary storage for active pages.
-
-SWAP: Secondary storage (up to 4 instances) for evicted pages.
-
-Demand Paging: Supports page replacement algorithms and page fault handling.
-
-Segmentation: Virtual memory is divided into VMA (Virtual Memory Areas) to manage code, heap, and stack segments.
-
-3. Kernel System Calls
-
-The interface between user-space and kernel-space is strictly maintained via system calls:
-
-listsyscall: Enumerates supported kernel functions.
-
-memmap: High-level memory management for allocation and VMA boundary adjustments.
-
-Extensibility: Custom handlers can be added by modifying the syscall.tbl and implementing handlers in src/.
-
-💻 Instruction Set Architecture
-
-Processes in the simulation execute the following instructions:
-
-Mnemonic
-
-Arguments
-
-Description
-
-CALC
-
-None
-
-Simulated CPU-bound computation.
-
-ALLOC
-
-[size] [reg]
-
-Allocates size bytes; stores pointer in reg.
-
-FREE
-
-[reg]
-
-Frees memory pointed to by reg.
-
-READ
-
-[src] [off] [dst]
-
-Reads byte from [src] + off into dst register.
-
-WRITE
-
-[data] [dst] [off]
-
-Writes data to memory at [dst] + off.
-
-🚀 Installation & Execution
-
-Build Requirements
-
-GNU Make
-
-GCC (C99 standard recommended)
-
-Build Steps
-
-# Clone the repository
-git clone [https://github.com/yourusername/simple-os-sim.git](https://github.com/yourusername/simple-os-sim.git)
-cd simple-os-sim
-
-# Compile the project
+### Building the Project
+To compile the kernel and virtual hardware:
+```bash
 make all
-
-
-Running the Simulator
-
-To execute a simulation scenario defined in an input file:
-
-./os input/[scenario_name]
-
-
-Example: ./os input/os_1
-
-⚙️ Configuration
-
-The simulation's behavior can be toggled in include/os-cfg.h:
-
-#define MLQ_SCHED: Enable/Disable Multi-Level Queue scheduling.
-
-#define MM_PAGING: Enable/Disable the paging memory system.
-
-#define MM64: Switch between 32-bit and 64-bit address translation.
-
-🎓 Academic Credit
-
-Course: Operating Systems (CO2018)
-
-Institution: HCMC University of Technology (HCMUT)
-
-Faculty: Computer Science & Engineering
