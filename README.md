@@ -1,112 +1,156 @@
-Simple Operating System Simulation
+Simple OS Simulation 🚀
 
-A simulation of core Operating System components including multi-level scheduling, memory management (paging/segmentation), and system call interfaces. This project was developed as part of the Operating Systems course at Ho Chi Minh City University of Technology (HCMUT).
+A high-fidelity simulation of core Operating System components, including a Multi-Level Queue (MLQ) scheduler, a 5-level paging Memory Management Unit (MMU), and a extensible System Call interface. This project mimics real-world kernel behaviors for resource isolation and task orchestration.
 
-Table of Contents
-
-Overview
-
-Key Features
-
-MLQ Scheduler
-
-Memory Management Unit (MMU)
-
-System Calls
-
-Project Structure
-
-Getting Started
-
-Process Instruction Set
+📑 Table of Contents
 
 Overview
 
-The goal of this assignment is to simulate major components of a simple OS to understand the fundamental principles of resource management. The system manages two virtual resources: CPUs and RAM, using two core modules: a Scheduler/Dispatcher and a Virtual Memory engine.
-
-Key Features
+Core Architecture
 
 MLQ Scheduler
 
-The system implements a Multi-Level Queue (MLQ) scheduling policy:
+Paging & MMU (32/64-bit)
 
-Priorities: Supports up to 140 priority levels.
+Kernel System Calls
 
-Algorithm: Processes are assigned to queues based on priority. The CPU runs processes in a Round-Robin style within fixed time slices.
+Instruction Set Architecture
 
-Slot Allocation: Each queue has a fixed number of slots to use the CPU, calculated as: slot = (MAX_PRIO - priority).
+Installation & Execution
 
-Memory Management Unit (MMU)
+Configuration
 
-A sophisticated paging-based memory management system:
+🧐 Overview
 
-Address Schemes: Supports both 32-bit and 64-bit (5-level paging) address translation.
+This project simulates the interaction between software processes and virtualized hardware. It manages two critical resources:
 
-Isolation: Each process has its own virtual memory space, isolated from others.
+CPU Time: Orchestrated via a prioritized MLQ dispatcher.
 
-Physical Memory: Manages one RAM device and up to 4 SWAP devices.
+Physical Memory: Isolated through a Virtual Memory engine supporting RAM and multi-instance SWAP storage.
 
-Paging Operations: Implements page allocation, swapping (in/out), and page table directory (PGD) management.
+🏗 Core Architecture
 
-System Calls
+1. MLQ Scheduler
 
-Provides a fundamental interface between applications and the kernel. Supported calls include:
+The scheduler implements a Multi-Level Queue policy inspired by the Linux kernel:
 
-listsyscall: List all available system calls.
+Priority Range: 0 to 139 (140 levels).
 
-memmap: Map memory, increase VMA limits, and handle swapping.
+Time Quantum: Round-Robin execution within each priority queue.
 
-Project Structure
+Dynamic Slot Allocation: Each priority level is assigned a specific time slot based on:
 
-include/: Header files (sched.h, mem.h, cpu.h, common.h, etc.)
+slot = MAX_PRIO - priority
 
-src/: Implementation files (sched.c, mm.c, cpu.c, os.c, etc.)
+Dispatcher: Handles context switching and process enqueuing back to the appropriate priority level.
 
-input/: Configuration files and sample process programs.
+2. Paging & MMU (32/64-bit)
 
-output/: Sample outputs for verification.
+The system supports sophisticated memory mapping techniques:
 
-Getting Started
+Address Schemes: Traditional 32-bit and modern 64-bit 5-level paging (PGD, P4D, PUD, PMD, PT).
 
-Prerequisites
+Memory Hierarchy:
 
-GCC Compiler
+RAM: Primary storage for active pages.
+
+SWAP: Secondary storage (up to 4 instances) for evicted pages.
+
+Demand Paging: Supports page replacement algorithms and page fault handling.
+
+Segmentation: Virtual memory is divided into VMA (Virtual Memory Areas) to manage code, heap, and stack segments.
+
+3. Kernel System Calls
+
+The interface between user-space and kernel-space is strictly maintained via system calls:
+
+listsyscall: Enumerates supported kernel functions.
+
+memmap: High-level memory management for allocation and VMA boundary adjustments.
+
+Extensibility: Custom handlers can be added by modifying the syscall.tbl and implementing handlers in src/.
+
+💻 Instruction Set Architecture
+
+Processes in the simulation execute the following instructions:
+
+Mnemonic
+
+Arguments
+
+Description
+
+CALC
+
+None
+
+Simulated CPU-bound computation.
+
+ALLOC
+
+[size] [reg]
+
+Allocates size bytes; stores pointer in reg.
+
+FREE
+
+[reg]
+
+Frees memory pointed to by reg.
+
+READ
+
+[src] [off] [dst]
+
+Reads byte from [src] + off into dst register.
+
+WRITE
+
+[data] [dst] [off]
+
+Writes data to memory at [dst] + off.
+
+🚀 Installation & Execution
+
+Build Requirements
 
 GNU Make
 
-Installation
+GCC (C99 standard recommended)
 
-Compile the source code using the provided Makefile:
+Build Steps
 
+# Clone the repository
+git clone [https://github.com/yourusername/simple-os-sim.git](https://github.com/yourusername/simple-os-sim.git)
+cd simple-os-sim
+
+# Compile the project
 make all
 
 
-Running the Simulation
+Running the Simulator
 
-Execute the simulation by specifying a configuration file:
+To execute a simulation scenario defined in an input file:
 
-./os [path_to_config_file]
-
-
-Example:
-
-./os input/os_1
+./os input/[scenario_name]
 
 
-Process Instruction Set
+Example: ./os input/os_1
 
-The simulated processes support the following instructions:
+⚙️ Configuration
 
-CALC: Perform CPU calculations.
+The simulation's behavior can be toggled in include/os-cfg.h:
 
-ALLOC [size] [reg]: Allocate memory and store the address in a register.
+#define MLQ_SCHED: Enable/Disable Multi-Level Queue scheduling.
 
-FREE [reg]: Deallocate memory.
+#define MM_PAGING: Enable/Disable the paging memory system.
 
-READ [source_reg] [offset] [dest_reg]: Read a byte from memory.
+#define MM64: Switch between 32-bit and 64-bit address translation.
 
-WRITE [data] [dest_reg] [offset]: Write data to memory.
+🎓 Academic Credit
 
 Course: Operating Systems (CO2018)
 
-Institution: Faculty of Computer Science & Engineering, HCMUT.
+Institution: HCMC University of Technology (HCMUT)
+
+Faculty: Computer Science & Engineering
