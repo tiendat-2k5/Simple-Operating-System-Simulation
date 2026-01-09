@@ -1,0 +1,16 @@
+20 15
+alloc 200000 1
+write 65 1 0
+write 66 1 4096
+write 67 1 8192
+write 68 1 12288
+write 69 1 16384
+write 70 1 20480
+write 71 1 24576
+write 72 1 28672
+write 73 1 32768
+write 74 1 36864
+write 75 1 40960
+write 76 1 150000
+write 77 1 180000
+syscall 440 1 0 0
